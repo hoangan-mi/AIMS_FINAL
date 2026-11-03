@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AIMS | Bất thường</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar">
+  <div class="brand">
+    <span class="brand-mark">UTT</span>
+    <span class="brand-copy"><strong>AIMS</strong><small>ASSET INTELLIGENCE</small></span>
+  </div>
+  <a href="/">⌂ &nbsp;Tổng quan</a>
+  <a href="/assets">▣ &nbsp;Danh sách tài sản</a>
+  <a href="/scan">◉ &nbsp;Quét QR</a>
+  <a href="/history">◷ &nbsp;Lịch sử quét</a>
+  <a class="active" href="/abnormal">⚠ &nbsp;Tài sản bất thường</a>
+  {% if session.role in ['admin', 'manager'] %}
+  <a href="/asset/add">＋ &nbsp;Thêm tài sản</a>
+  <a href="/liquidated-assets">⊘ &nbsp;Tài sản thanh lý</a>
+  <a href="/password-requests">📋 &nbsp;Yêu cầu mật khẩu</a>
+  {% endif %}
+  <a href="/profile">👤 &nbsp;Thông tin tài khoản</a>
+  <a href="/change-password">🔑 &nbsp;Đổi mật khẩu</a>
+  <div class="logout"><a href="/logout">↪ &nbsp;Đăng xuất</a></div>
+</aside>
+
+<main class="content">
+  <p class="page-eyebrow">Cần xử lý</p>
+  <h1>Tài sản bất thường</h1>
+  <p class="subtitle">Theo dõi và xử lý các cảnh báo phát sinh trong quá trình kiểm kê.</p>
+
+  <section class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>ID tài sản</th>
+            <th>Phòng đúng</th>
+            <th>Phòng quét</th>
+            <th>Trạng thái</th>
+            <th>Mô tả</th>
+            <th>Thời gian</th>
+            <th>Người quét</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in abnormal_assets %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td><strong>{{ a.asset_id }}</strong></td>
+            <td>{{ a.expected_room }}</td>
+            <td>{{ a.scanned_room }}</td>
+            <td>
+              {% if a.type_alert == "wrong_room" %}
+                <span class="badge-danger">● Sai phòng</span>
+              {% elif a.type_alert == "damage" %}
+                <span class="badge-warning">● Báo hỏng</span>
+              {% else %}
+                Không xác định
+              {% endif %}
+            </td>
+            <td>{{ a.description or "—" }}</td>
+            <td>{{ a.time }}</td>
+            <td>{{ a.user }}</td>
+            <td>
+              <form action="/delete_abnormal" method="post">
+                <input type="hidden" name="asset_id" value="{{ a.asset_id }}">
+                <input type="hidden" name="time" value="{{ a.time }}">
+                <button type="submit" style="padding:8px 10px;font-size:12px;background:#10b981;color:white;border:0;border-radius:6px;font-weight:700;cursor:pointer;">Đã xử lý</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="9" class="empty">Không có tài sản bất thường.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+</div>
+</body>
+</html>

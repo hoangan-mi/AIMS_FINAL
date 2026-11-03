@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIMS | Thêm tài sản mới</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+<style>
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px 20px;
+    width: 100%;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+.form-group label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #344257;
+}
+.form-group label .required {
+    color: #e14b4b;
+    margin-left: 2px;
+}
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+.form-group .help-text {
+    font-size: 11px;
+    color: #718096;
+}
+.form-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 24px;
+    grid-column: 1 / -1;
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar">
+  <div class="brand">
+    <span class="brand-mark">UTT</span>
+    <span class="brand-copy"><strong>AIMS</strong><small>ASSET INTELLIGENCE</small></span>
+  </div>
+  <a href="/">⌂ &nbsp;Tổng quan</a>
+  <a href="/assets">▣ &nbsp;Danh sách tài sản</a>
+  <a href="/scan">◉ &nbsp;Quét QR</a>
+  <a href="/history">◷ &nbsp;Lịch sử quét</a>
+  <a href="/abnormal">⚠ &nbsp;Tài sản bất thường</a>
+  {% if session.role in ['admin', 'manager'] %}
+  <a class="active" href="/asset/add">＋ &nbsp;Thêm tài sản</a>
+  <a href="/liquidated-assets">⊘ &nbsp;Tài sản thanh lý</a>
+  <a href="/password-requests">📋 &nbsp;Yêu cầu mật khẩu</a>
+  {% endif %}
+  <a href="/profile">👤 &nbsp;Thông tin tài khoản</a>
+  <a href="/change-password">🔑 &nbsp;Đổi mật khẩu</a>
+  <div class="logout"><a href="/logout">↪ &nbsp;Đăng xuất</a></div>
+</aside>
+
+<main class="content">
+  <p class="page-eyebrow">Quản trị danh mục</p>
+  <h1>Thêm tài sản mới</h1>
+  <p class="subtitle">Khởi tạo thông tin thiết bị, tài sản mới để lưu trữ vào CSDL SQLite và tạo mã định danh theo thời gian thực.</p>
+
+  {% if error %}
+  <div class="notice notice-danger" style="margin-bottom:20px;">
+    ⚠️ {{ error }}
+  </div>
+  {% endif %}
+
+  {% if success %}
+  <div class="notice notice-success" style="margin-bottom:20px;">
+    ✔ {{ success }}
+  </div>
+  {% endif %}
+
+  <section class="card" style="max-width:960px">
+    <form method="POST" style="display:block">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Mã tài sản (ID)<span class="required">*</span></label>
+          <input type="text" name="ID_assets" value="{{ form_data.get('ID_assets', '') }}" placeholder="Ví dụ: A2-01-0101-TB-26" required>
+          <span class="help-text">Mã định danh duy nhất (dùng để tạo và quét mã QR)</span>
+        </div>
+
+        <div class="form-group">
+          <label>Loại / Tên tài sản<span class="required">*</span></label>
+          <input type="text" name="Type_asset" value="{{ form_data.get('Type_asset', '') }}" placeholder="Ví dụ: Desk( 2 seats), Smart TV, Máy tính..." required>
+          <span class="help-text">Tên danh mục hoặc loại trang thiết bị</span>
+        </div>
+
+        <div class="form-group">
+          <label>Mã loại (Id_type)</label>
+          <input type="text" name="Id_type" value="{{ form_data.get('Id_type', '') }}" placeholder="Ví dụ: TB, TV, GGV, BP...">
+          <span class="help-text">Ký hiệu viết tắt nhóm tài sản</span>
+        </div>
+
+        <div class="form-group">
+          <label>Số thứ tự (Ordinal number)</label>
+          <input type="text" name="Ordinal_number" value="{{ form_data.get('Ordinal_number', '') }}" placeholder="Ví dụ: 1, 2, 26...">
+        </div>
+
+        <div class="form-group">
+          <label>Tòa nhà (Auditorium)</label>
+          <input type="text" name="Auditorium" value="{{ form_data.get('Auditorium', '') }}" placeholder="Ví dụ: A2, B3...">
+        </div>
+
+        <div class="form-group">
+          <label>Tầng (Floor)</label>
+          <input type="text" name="Floor" value="{{ form_data.get('Floor', '') }}" placeholder="Ví dụ: 1, 2, 3...">
+        </div>
+
+        <div class="form-group">
+          <label>Phòng (Room)</label>
+          <input type="text" name="Room" value="{{ form_data.get('Room', '') }}" placeholder="Ví dụ: 101, 202, HT...">
+        </div>
+
+        <div class="form-group">
+          <label>Năm trang bị (Year)</label>
+          <input type="number" name="Year" value="{{ form_data.get('Year', '') }}" min="1990" max="2100" placeholder="Ví dụ: 2024">
+        </div>
+
+        <div class="form-group">
+          <label>Xuất xứ (Origin)</label>
+          <input type="text" name="Origin" value="{{ form_data.get('Origin', 'Việt Nam') }}" placeholder="Ví dụ: Việt Nam, Trung Quốc...">
+        </div>
+
+        <div class="form-group">
+          <label>Tình trạng (Status)</label>
+          <select name="Status">
+            <option value="Đang hoạt động" {% if form_data.get('Status') == 'Đang hoạt động' %}selected{% endif %}>Đang hoạt động</option>
+            <option value="Cần sửa chữa" {% if form_data.get('Status') == 'Cần sửa chữa' %}selected{% endif %}>Cần sửa chữa</option>
+            <option value="Hỏng" {% if form_data.get('Status') == 'Hỏng' %}selected{% endif %}>Hỏng</option>
+            <option value="Đang bảo trì" {% if form_data.get('Status') == 'Đang bảo trì' %}selected{% endif %}>Đang bảo trì</option>
+            <option value="Chờ thanh lý" {% if form_data.get('Status') == 'Chờ thanh lý' %}selected{% endif %}>Chờ thanh lý</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Điểm ATS gốc (0 - 100)</label>
+          <input type="number" name="ATS" value="{{ form_data.get('ATS', '100') }}" min="0" max="100" placeholder="100">
+          <span class="help-text">Chỉ số chất lượng ban đầu (mặc định 100)</span>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Ghi chú (Notes)</label>
+          <input type="text" name="Notes" value="{{ form_data.get('Notes', '') }}" placeholder="Ghi chú thêm về vị trí, tính chất sử dụng...">
+        </div>
+
+        <div class="form-group full-width">
+          <label>Mô tả chi tiết (Description)</label>
+          <textarea name="Description" rows="3" placeholder="Mô tả công năng sử dụng, đặc điểm kỹ thuật...">{{ form_data.get('Description', '') }}</textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn primary">＋ Thêm tài sản</button>
+          <a href="/assets" class="btn secondary">Hủy bỏ</a>
+        </div>
+      </div>
+    </form>
+  </section>
+</main>
+</div>
+</body>
+</html>

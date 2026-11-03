@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIMS | Tài sản</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar">
+  <div class="brand">
+    <span class="brand-mark">UTT</span>
+    <span class="brand-copy"><strong>AIMS</strong><small>ASSET INTELLIGENCE</small></span>
+  </div>
+  <a href="/">⌂ &nbsp;Tổng quan</a>
+  <a class="active" href="/assets">▣ &nbsp;Danh sách tài sản</a>
+  <a href="/scan">◉ &nbsp;Quét QR</a>
+  <a href="/history">◷ &nbsp;Lịch sử quét</a>
+  <a href="/abnormal">⚠ &nbsp;Tài sản bất thường</a>
+  {% if session.role in ['admin', 'manager'] %}
+  <a href="/asset/add">＋ &nbsp;Thêm tài sản</a>
+  <a href="/liquidated-assets">⊘ &nbsp;Tài sản thanh lý</a>
+  <a href="/password-requests">📋 &nbsp;Yêu cầu mật khẩu</a>
+  {% endif %}
+  <a href="/profile">👤 &nbsp;Thông tin tài khoản</a>
+  <a href="/change-password">🔑 &nbsp;Đổi mật khẩu</a>
+  <div class="logout"><a href="/logout">↪ &nbsp;Đăng xuất</a></div>
+</aside>
+
+<main class="content">
+  <p class="page-eyebrow">Danh mục tài sản</p>
+  <h1>Danh sách tài sản</h1>
+  <p class="subtitle">Tra cứu nhanh theo phòng hoặc theo nhóm thiết bị theo thời gian thực.</p>
+
+  <section class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+      <form method="GET" style="margin:0">
+        <input type="text" name="room" placeholder="Tìm theo phòng" value="{{ request.args.get('room', '') }}">
+        <input type="text" name="type" placeholder="Tìm theo loại tài sản" value="{{ request.args.get('type', '') }}">
+        <button type="submit">Tìm kiếm</button>
+      </form>
+      {% if session.role in ['admin', 'manager'] %}
+      <div style="display:flex;gap:10px;">
+        <a href="/asset/add" class="btn primary" style="text-decoration:none">＋ Thêm tài sản</a>
+        <a href="/liquidated-assets" class="btn secondary" style="text-decoration:none">⊘ Tài sản thanh lý</a>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="table-wrap" style="margin-top:16px">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tòa</th>
+            <th>Tầng</th>
+            <th>Phòng</th>
+            <th>Loại</th>
+            <th>STT</th>
+            <th>Mô tả</th>
+            <th>Năm</th>
+            <th>Xuất xứ</th>
+            <th>Tình trạng</th>
+            <th>ATS</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for id, asset in assets.items() %}
+          <tr>
+            <td><strong>{{ asset["ID_assets"] }}</strong></td>
+            <td>{{ asset["Auditorium"] }}</td>
+            <td>{{ asset["Floor"] }}</td>
+            <td>{{ asset["Room"] }}</td>
+            <td>{{ asset["Type_asset"] }}</td>
+            <td>{{ asset["Ordinal_number"] }}</td>
+            <td>{{ asset.get("Description", "—") }}</td>
+            <td>{{ asset["Year"] }}</td>
+            <td>{{ asset["Origin"] }}</td>
+            <td>{{ asset["Status"] }}</td>
+            <td>
+              {% if asset['ATS_value'] >= 80 %}
+                <span style="color:#168358;font-weight:700">● {{ asset['ATS_display'] }}</span>
+              {% elif asset['ATS_value'] >= 50 %}
+                <span style="color:#bd7800;font-weight:700">● {{ asset['ATS_display'] }}</span>
+              {% else %}
+                <span style="color:#cb3f3f;font-weight:700">● {{ asset['ATS_display'] }}</span>
+              {% endif %}
+            </td>
+            <td style="white-space:nowrap">
+              <a class="detail" href="/asset/{{ asset['ID_assets'] }}">Chi tiết →</a>
+              {% if session.role in ['admin', 'manager'] %}
+              &nbsp;|&nbsp;
+              <a class="detail" style="color:#0284c7" href="/asset/{{ asset['ID_assets'] }}/edit">✏ Sửa</a>
+              &nbsp;|&nbsp;
+              <form action="/asset/{{ asset['ID_assets'] }}/delete" method="POST" style="display:inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tài sản {{ asset['ID_assets'] }} và chuyển vào mục Tài sản thanh lý?');">
+                <button type="submit" style="background:#fee2e2;color:#dc2626;border:0;border-radius:6px;padding:4px 8px;font-size:12px;font-weight:700;cursor:pointer;">🗑 Xóa</button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="12" class="empty">Chưa có tài sản phù hợp.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <a href="/" class="back">← Quay lại tổng quan</a>
+  </section>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AIMS | Tổng quan</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar">
+  <div class="brand">
+    <span class="brand-mark">UTT</span>
+    <span class="brand-copy"><strong>AIMS</strong><small>ASSET INTELLIGENCE</small></span>
+  </div>
+  <a class="active" href="/">⌂ &nbsp;Tổng quan</a>
+  <a href="/assets">▣ &nbsp;Danh sách tài sản</a>
+  <a href="/scan">◉ &nbsp;Quét QR</a>
+  <a href="/history">◷ &nbsp;Lịch sử quét</a>
+  <a href="/abnormal">⚠ &nbsp;Tài sản bất thường</a>
+  {% if session.role in ['admin', 'manager'] %}
+  <a href="/asset/add">＋ &nbsp;Thêm tài sản</a>
+  <a href="/liquidated-assets">⊘ &nbsp;Tài sản thanh lý</a>
+  <a href="/password-requests">📋 &nbsp;Yêu cầu mật khẩu</a>
+  {% endif %}
+  <a href="/profile">👤 &nbsp;Thông tin tài khoản</a>
+  <a href="/change-password">🔑 &nbsp;Đổi mật khẩu</a>
+  <div class="logout"><a href="/logout">↪ &nbsp;Đăng xuất</a></div>
+</aside>
+
+<main class="content">
+  <p class="page-eyebrow">Không gian làm việc</p>
+  <h1>Chào buổi làm việc, {{ current_user.full_name if current_user else session.username }}</h1>
+  <p class="subtitle">Theo dõi, kiểm kê và duy trì trạng thái tài sản trong một không gian tập trung.</p>
+
+  {% if session.current_room %}
+  <div class="notice notice-success" style="margin-bottom:20px;">⌖ Phiên quét đang chọn: {{ session.current_room }}</div>
+  {% endif %}
+
+  <div class="insight-grid" style="max-width:850px;margin-top:24px">
+    <div class="insight">
+      <span class="insight-label">Quy trình</span>
+      <span class="insight-value">Kiểm kê bằng mã QR</span>
+    </div>
+    <div class="insight">
+      <span class="insight-label">Cơ sở dữ liệu</span>
+      <span class="insight-value">SQLite thời gian thực</span>
+    </div>
+    <div class="insight">
+      <span class="insight-label">Hỗ trợ</span>
+      <span class="insight-value">Theo dõi cảnh báo tập trung</span>
+    </div>
+  </div>
+</main>
+</div>
+</body>
+</html>

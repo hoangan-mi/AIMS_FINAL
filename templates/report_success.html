@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Báo cáo thành công</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+
+<style>
+body{
+font-family:"Be Vietnam Pro",Segoe UI;
+background:radial-gradient(circle at 0 0,#fff0e7 0,transparent 32%),#f6f8fb;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.box{
+background:white;
+padding:30px;
+border-radius:18px;
+box-shadow:0 16px 45px rgba(23,32,51,.09);
+text-align:center;
+}
+
+a{
+display:inline-block;
+margin-top:15px;
+padding:10px 15px;
+background:#f26a21;
+color:white;
+text-decoration:none;
+border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>✅ Báo cáo đã được gửi</h2>
+
+<p>Tài sản: {{ asset.ID_assets }}</p>
+
+<a href="/scan">Quay lại quét QR</a>
+
+</div>
+
+</body>
+</html>

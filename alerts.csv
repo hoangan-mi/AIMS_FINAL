@@ -1,0 +1,4 @@
+user,asset_id,expected_room,scanned_room,type_alert,description,time,status
+admin,A2-01-0101-TB-02,101,101,damage,hỏng,2026-11-01 21:10:05,resolved
+admin,A2-01-0101-TB-01,101,101,damage,gãy,2026-11-01 21:11:46,resolved
+admin,A2-01-0101-TB-01,101,101,damage,hỏng,2026-11-01 21:16:21,resolved

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thông tin tài sản</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:"Be Vietnam Pro","Segoe UI",Roboto,Arial,sans-serif;
+background:radial-gradient(circle at 0 0,#fff0e7 0,transparent 32%),#f6f8fb;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh
+}
+
+.container{
+width:100%;
+max-width:520px;
+padding:20px
+}
+
+.card{
+background:#fff;
+border-radius:20px;
+box-shadow:0 16px 45px rgba(23,32,51,.09);
+padding:28px
+}
+
+.success-banner{
+background:#eaf8f1;
+color:#157950;
+padding:12px 16px;
+border-radius:10px;
+font-weight:600;
+margin-bottom:24px;
+display:flex;
+align-items:center;
+gap:8px
+}
+
+.danger-banner{
+background:#fff1f1;
+color:#b91c1c;
+padding:12px 16px;
+border-radius:10px;
+font-weight:600;
+margin-bottom:24px;
+display:flex;
+align-items:center;
+gap:8px;
+border:1px solid #fecaca;
+}
+
+.asset-id{
+font-size:20px;
+font-weight:700;
+margin-bottom:20px;
+word-break:break-word
+}
+
+.info-row{
+display:flex;
+justify-content:space-between;
+padding:10px 0;
+border-bottom:1px solid #f1f5f9
+}
+
+.info-row:last-child{
+border-bottom:none
+}
+
+.label{
+color:#64748b;
+font-size:14px
+}
+
+.value{
+font-weight:600;
+color:#0f172a;
+text-align:right
+}
+
+.back-link{
+display:inline-block;
+text-decoration:none;
+color:#f26a21;
+font-weight:500
+}
+
+.back-link:hover{
+opacity:.7
+}
+</style>
+</head>
+
+<body>
+
+{% if asset %}
+
+{% set ats = asset.get("ATS",100)|int %}
+
+<div class="container">
+<div class="card">
+
+<!-- ERROR -->
+{% if error %}
+<div style="background:#fef2f2;color:#b91c1c;padding:12px;border-radius:10px;margin-bottom:20px;font-weight:600;">
+{{ error }}
+</div>
+{% endif %}
+
+{% if asset.is_deleted %}
+<div class="danger-banner">
+⊘ Tài sản đã thanh lý ({{ asset.Status }})
+</div>
+{% else %}
+<div class="success-banner">
+✔ Quét thành công
+</div>
+{% endif %}
+
+<div class="asset-id">
+{{ asset["ID_assets"] }}
+</div>
+
+<div class="info-row">
+<span class="label">Loại tài sản</span>
+<span class="value">{{ asset["Type_asset"] }}</span>
+</div>
+
+<div class="info-row">
+<span class="label">Mã loại</span>
+<span class="value">{{ asset["Id_type"] or "—" }}</span>
+</div>
+
+<div class="info-row">
+<span class="label">Số thứ tự</span>
+<span class="value">{{ asset["Ordinal_number"] or "—" }}</span>
+</div>
+
+<div class="info-row">
+<span class="label">Trạng thái</span>
+<span class="value" style="color:{% if asset.is_deleted %}#dc2626{% else %}#157950{% endif %}">
+{{ asset["Status"] or "Đang hoạt động" }}
+</span>
+</div>
+
+<div class="info-row">
+<span class="label">Ghi chú</span>
+<span class="value">{{ asset["Notes"] or "—" }}</span>
+</div>
+
+<div class="info-row">
+<span class="label">ATS</span>
+<span class="value">{{ ats }}</span>
+</div>
+
+<hr style="border:none;border-top:1px solid #f1f5f9;margin:20px 0;">
+
+{% if not asset.is_deleted %}
+<!-- BÁO HỎNG -->
+<form action="/report/{{ asset['ID_assets'] }}" method="get">
+<button type="submit"
+style="width:100%;padding:12px;border:none;border-radius:10px;background:#ef4444;color:white;font-weight:600;cursor:pointer;">
+🚨 Báo cáo hư hỏng
+</button>
+</form>
+
+{% if session.role in ['admin', 'manager'] %}
+<a href="/asset/{{ asset['ID_assets'] }}/edit" class="btn secondary" style="width:100%;margin-top:10px;padding:12px;border-radius:10px;text-align:center;text-decoration:none;display:block;box-sizing:border-box;font-weight:600;">
+✏ Sửa thông tin tài sản
+</a>
+
+<form action="/asset/{{ asset['ID_assets'] }}/delete" method="POST" style="margin-top:10px" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tài sản này và chuyển vào mục Tài sản thanh lý không?');">
+<button type="submit" style="width:100%;padding:12px;border:none;border-radius:10px;background:#991b1b;color:white;font-weight:600;cursor:pointer;">
+🗑 Xóa khỏi danh sách tài sản
+</button>
+</form>
+{% endif %}
+
+{% else %}
+
+{% if session.role in ['admin', 'manager'] %}
+<form action="/asset/{{ asset['ID_assets'] }}/restore" method="POST">
+<button type="submit" class="btn primary" style="width:100%;padding:12px;border-radius:10px;font-weight:600;cursor:pointer;">
+↺ Khôi phục về danh mục tài sản hoạt động
+</button>
+</form>
+{% endif %}
+
+{% endif %}
+
+<div style="display:flex;gap:16px;align-items:center;margin-top:20px;">
+  <a href="/assets" class="back-link">← Danh sách tài sản</a>
+  <span style="color:#cbd5e1">|</span>
+  <a href="/liquidated-assets" class="back-link">Kho thanh lý</a>
+  <span style="color:#cbd5e1">|</span>
+  <a href="/" class="back-link">Trang chủ</a>
+</div>
+
+</div>
+</div>
+
+{% else %}
+
+<div class="container">
+<div class="card">
+<div class="success-banner" style="background:#fef2f2;color:#b91c1c">
+Không tìm thấy tài sản
+</div>
+<div style="margin-top:16px;">
+  <a href="/assets" class="back-link">← Danh sách tài sản</a>
+</div>
+</div>
+</div>
+
+{% endif %}
+
+</body>
+</html>

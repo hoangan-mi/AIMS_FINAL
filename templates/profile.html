@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AIMS | Thông tin tài khoản</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+  <style>
+    .profile-card {
+      max-width: 680px;
+      margin-top: 24px;
+      padding: 32px;
+    }
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 24px;
+    }
+    .profile-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--orange), #ff914d);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      font-weight: 800;
+      box-shadow: 0 10px 22px rgba(238,106,36,.28);
+    }
+    .profile-title h2 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      color: var(--ink);
+    }
+    .profile-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      background: #fff0e8;
+      color: var(--orange-dark);
+    }
+    .profile-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .profile-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px solid #edf2f7;
+    }
+    .profile-item .label {
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .profile-item .value {
+      color: #0f172a;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .profile-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar">
+  <div class="brand">
+    <span class="brand-mark">UTT</span>
+    <span class="brand-copy"><strong>AIMS</strong><small>ASSET INTELLIGENCE</small></span>
+  </div>
+  <a href="/">⌂ &nbsp;Tổng quan</a>
+  <a href="/assets">▣ &nbsp;Danh sách tài sản</a>
+  <a href="/scan">◉ &nbsp;Quét QR</a>
+  <a href="/history">◷ &nbsp;Lịch sử quét</a>
+  <a href="/abnormal">⚠ &nbsp;Tài sản bất thường</a>
+  {% if session.role in ['admin', 'manager'] %}
+  <a href="/asset/add">＋ &nbsp;Thêm tài sản</a>
+  <a href="/liquidated-assets">⊘ &nbsp;Tài sản thanh lý</a>
+  <a href="/password-requests">📋 &nbsp;Yêu cầu mật khẩu</a>
+  {% endif %}
+  <a class="active" href="/profile">👤 &nbsp;Thông tin tài khoản</a>
+  <a href="/change-password">🔑 &nbsp;Đổi mật khẩu</a>
+  <div class="logout"><a href="/logout">↪ &nbsp;Đăng xuất</a></div>
+</aside>
+
+<main class="content">
+  <p class="page-eyebrow">Hồ sơ người dùng</p>
+  <h1>Thông tin tài khoản</h1>
+  <p class="subtitle">Chi tiết thông tin định danh và vai trò người dùng trong hệ thống AIMS.</p>
+
+  <section class="card profile-card">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        {{ (user.full_name or session.username)[:1] | upper }}
+      </div>
+      <div class="profile-title">
+        <h2>{{ user.full_name or session.username }}</h2>
+        <span class="profile-badge">Vai trò: {{ user.role }}</span>
+      </div>
+    </div>
+
+    <div class="profile-list">
+      <div class="profile-item">
+        <span class="label">Tên đăng nhập</span>
+        <span class="value">{{ user.username }}</span>
+      </div>
+
+      <div class="profile-item">
+        <span class="label">Họ và tên</span>
+        <span class="value">{{ user.full_name }}</span>
+      </div>
+
+      <div class="profile-item">
+        <span class="label">Địa chỉ Email UTT</span>
+        <span class="value">{{ user.email }}</span>
+      </div>
+
+      <div class="profile-item">
+        <span class="label">Khoa</span>
+        <span class="value">{{ user.department }}</span>
+      </div>
+
+      {% if user.classroom %}
+      <div class="profile-item">
+        <span class="label">Lớp</span>
+        <span class="value">{{ user.classroom }}</span>
+      </div>
+      {% endif %}
+
+      <div class="profile-item">
+        <span class="label">Quyền hạn hệ thống</span>
+        <span class="value" style="color:var(--orange)">{{ user.role }}</span>
+      </div>
+
+      <div class="profile-item">
+        <span class="label">Thời gian phiên đăng nhập</span>
+        <span class="value">
+          {% if user.role == 'user' %}
+            5 phút (Tự động đăng xuất để bảo mật)
+          {% else %}
+            Không giới hạn thời gian
+          {% endif %}
+        </span>
+      </div>
+    </div>
+
+    <div class="profile-actions">
+      <a href="/change-password" class="btn primary">🔑 Đổi mật khẩu</a>
+      <a href="/" class="btn secondary">← Quay lại trang chủ</a>
+    </div>
+  </section>
+</main>
+</div>
+</body>
+</html>

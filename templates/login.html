@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UTT AIMS | Đăng nhập</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+  <style>
+    body{min-height:100vh;display:grid;place-items:center;background:linear-gradient(125deg,#9e3009,#ef661d 47%,#ff9a55)}
+    .login-wrap{width:min(920px,calc(100% - 32px));min-height:540px;display:grid;grid-template-columns:1.02fr .98fr;background:white;border-radius:25px;overflow:hidden;box-shadow:0 30px 75px rgba(92,31,7,.3);animation:rise .55s ease both}
+    .login-side{padding:54px;color:white;background:linear-gradient(160deg,#202d43,#142034);position:relative;overflow:hidden}
+    .login-side:after{content:'';position:absolute;width:350px;height:350px;border:1px solid rgba(255,255,255,.12);border-radius:50%;right:-110px;bottom:-150px}
+    .utt-logo{display:inline-grid;place-items:center;width:70px;height:70px;background:var(--orange);border-radius:18px;font-weight:800;letter-spacing:-2px;font-size:23px;box-shadow:0 12px 25px rgba(242,106,33,.34)}
+    .login-side h1{font-size:34px;margin:36px 0 15px;line-height:1.22}
+    .login-side p{color:#bdc8d7;line-height:1.7;font-size:14px;max-width:320px}
+    .login-panel{padding:54px 48px;display:flex;flex-direction:column;justify-content:center}
+    .login-panel h2{font-size:27px;margin:0 0 9px}
+    .login-panel .lead{color:var(--muted);font-size:14px;margin:0 0 26px}
+    .login-panel form{display:grid;gap:13px}
+    .login-panel input{width:100%;padding:14px}
+    .password-field{position:relative}
+    .password-field input{padding-right:54px}
+    .toggle-password{position:absolute;right:7px;top:7px;width:40px;height:40px;border:0;border-radius:8px;background:transparent;color:#607087;font-size:18px;box-shadow:none;padding:0}
+    .toggle-password:hover{color:var(--orange);background:#fff3ec;transform:none;box-shadow:none}
+    .login-panel button[type="submit"]{width:100%;margin-top:6px;padding:14px}
+    .login-error{margin:0 0 18px;background:#fff1f1;color:#bd3636;padding:11px 13px;border-radius:9px;font-size:13px;font-weight:600}
+    @media(max-width:680px){
+      .login-wrap{grid-template-columns:1fr;min-height:auto}
+      .login-side{padding:28px}
+      .login-side h1{font-size:25px;margin:18px 0 8px}
+      .login-panel{padding:32px 26px}
+      .login-side:after{display:none}
+    }
+  </style>
+</head>
+<body>
+  <main class="login-wrap">
+    <section class="login-side">
+      <div class="utt-logo">UTT</div>
+      <h1>Asset Intelligence<br>Management System</h1>
+      <p>Nền tảng quản lý tài sản thông minh dành cho Trường Đại học Công nghệ Giao thông vận tải.</p>
+    </section>
+    <section class="login-panel">
+      <p class="page-eyebrow">UTT · AIMS</p>
+      <h2>Chào mừng trở lại</h2>
+      <p class="lead">Đăng nhập để tiếp tục quản lý tài sản.</p>
+      {% if error %}
+        <p class="login-error">{{ error }}</p>
+      {% endif %}
+      <form method="POST">
+        <input name="username" placeholder="Tên đăng nhập" autocomplete="username" required>
+        <div class="password-field">
+          <input id="password" type="password" name="password" placeholder="Mật khẩu" autocomplete="current-password" required>
+          <button class="toggle-password" type="button" aria-label="Hiện mật khẩu" title="Hiện mật khẩu" onclick="togglePassword()">◉</button>
+        </div>
+        <button type="submit">Đăng nhập →</button>
+      </form>
+      <a href="{{ url_for('forgot_password') }}" style="margin-top:16px;text-align:center;color:#d95512;font-size:14px;text-decoration:none">Quên mật khẩu / Tra cứu kết quả duyệt</a>
+    </section>
+  </main>
+  <script>
+    function togglePassword(){
+      const input=document.getElementById('password');
+      const button=document.querySelector('.toggle-password');
+      const show=input.type==='password';
+      input.type=show?'text':'password';
+      button.textContent=show?'◉':'◌';
+      button.setAttribute('aria-label',show?'Ẩn mật khẩu':'Hiện mật khẩu');
+      button.title=show?'Ẩn mật khẩu':'Hiện mật khẩu';
+    }
+  </script>
+</body>
+</html>

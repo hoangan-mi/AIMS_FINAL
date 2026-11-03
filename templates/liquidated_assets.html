@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AIMS | Tài sản thanh lý</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+<div class="app-shell">
+<aside class="sidebar">
+  <div class="brand">
+    <span class="brand-mark">UTT</span>
+    <span class="brand-copy"><strong>AIMS</strong><small>ASSET INTELLIGENCE</small></span>
+  </div>
+  <a href="/">⌂ &nbsp;Tổng quan</a>
+  <a href="/assets">▣ &nbsp;Danh sách tài sản</a>
+  <a href="/scan">◉ &nbsp;Quét QR</a>
+  <a href="/history">◷ &nbsp;Lịch sử quét</a>
+  <a href="/abnormal">⚠ &nbsp;Tài sản bất thường</a>
+  {% if session.role in ['admin', 'manager'] %}
+  <a href="/asset/add">＋ &nbsp;Thêm tài sản</a>
+  <a class="active" href="/liquidated-assets">⊘ &nbsp;Tài sản thanh lý</a>
+  {% endif %}
+  <a href="/profile">👤 &nbsp;Thông tin tài khoản</a>
+  <a href="/change-password">🔑 &nbsp;Đổi mật khẩu</a>
+  <div class="logout"><a href="/logout">↪ &nbsp;Đăng xuất</a></div>
+</aside>
+
+<main class="content">
+  <p class="page-eyebrow">Kho lưu trữ thanh lý</p>
+  <h1>Tài sản thanh lý</h1>
+  <p class="subtitle">Danh sách các tài sản đã xóa khỏi danh mục tài sản hoạt động, lưu trữ trạng thái thanh lý theo thời gian thực.</p>
+
+  <section class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID tài sản</th>
+            <th>Tòa</th>
+            <th>Tầng</th>
+            <th>Phòng</th>
+            <th>Loại tài sản</th>
+            <th>Trạng thái lưu trữ</th>
+            <th>Thời gian xóa</th>
+            <th>Người thực hiện</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for asset in assets %}
+          <tr>
+            <td><strong>{{ asset["ID_assets"] }}</strong></td>
+            <td>{{ asset["Auditorium"] or "—" }}</td>
+            <td>{{ asset["Floor"] or "—" }}</td>
+            <td>{{ asset["Room"] or "—" }}</td>
+            <td>{{ asset["Type_asset"] }}</td>
+            <td>
+              <span class="badge-danger" style="background:#fee2e2;color:#b91c1c;padding:5px 9px;border-radius:6px;font-weight:700">
+                ● {{ asset["Status"] or "đã xóa khỏi danh sách tài sản" }}
+              </span>
+            </td>
+            <td>{{ asset["deleted_at"] or "—" }}</td>
+            <td><strong>{{ asset["deleted_by"] or "—" }}</strong></td>
+            <td style="white-space:nowrap">
+              <a class="detail" href="/asset/{{ asset['ID_assets'] }}">Chi tiết →</a>
+              {% if session.role in ['admin', 'manager'] %}
+              &nbsp;|&nbsp;
+              <form action="/asset/{{ asset['ID_assets'] }}/restore" method="POST" style="display:inline" onsubmit="return confirm('Bạn có chắc muốn khôi phục tài sản {{ asset['ID_assets'] }} về danh sách tài sản hoạt động?');">
+                <button type="submit" class="btn secondary" style="padding:4px 8px;font-size:12px;background:#e0f2fe;color:#0369a1;border:0;border-radius:6px;font-weight:700;cursor:pointer">
+                  ↺ Khôi phục
+                </button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="9" class="empty">Hiện chưa có tài sản nào trong danh mục thanh lý.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:20px;display:flex;gap:16px;">
+      <a href="/assets" class="back">← Quay lại danh sách tài sản</a>
+      <a href="/" class="back">Về trang chủ</a>
+    </div>
+  </section>
+</main>
+</div>
+</body>
+</html>

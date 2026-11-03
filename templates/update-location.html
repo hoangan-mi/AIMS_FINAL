@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Update Location</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+<style>body{font-family:"Be Vietnam Pro",Segoe UI;background:radial-gradient(circle at 0 0,#fff0e7 0,transparent 32%),#f6f8fb;min-height:100vh;margin:0;display:grid;place-items:center}.location-card{width:min(100% - 32px,500px);padding:32px;background:#fff;border-radius:20px;box-shadow:0 16px 45px rgba(23,32,51,.09)}.location-card h2{margin:0 0 22px}.location-card form{display:grid}.location-card label{font-size:13px;font-weight:700;color:#526074;margin:14px 0 7px}.location-card button{margin-top:20px}</style>
+</head>
+
+<body>
+
+<main class="location-card"><p class="page-eyebrow">AIMS · Asset location</p><h2>Cập nhật vị trí tài sản</h2>
+
+<form action="/update-location" method="POST">
+
+<input id="assetID" type="hidden" name="asset_id" value="{{ asset.ID_assets }}">
+
+<label>Auditorium</label>
+<input name="auditorium" required>
+
+<label>Floor</label>
+<input name="floor" required>
+
+<label>Room</label>
+<input name="room" required>
+
+<button type="submit">Update</button>
+
+</form>
+</main>
+
+<script>
+
+const path=window.location.pathname
+const id=path.split("/").pop()
+
+document.getElementById("assetID").value=id
+
+</script>
+
+</body>
+</html>
