@@ -12,7 +12,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "aims-utt-secret-key-2026")
-app.permanent_session_lifetime = timedelta(minutes=5)
+app.permanent_session_lifetime = timedelta(days = 31)
 app.config["SESSION_REFRESH_EACH_REQUEST"] = False
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -138,7 +138,7 @@ def expire_login_session():
         return None
 
     # Chỉ áp dụng timeout 5 phút cho vai trò 'user'
-    if session.get("role") != "user":
+    if (session.get("role") or "").strip().lower() != "user":
         return None
 
     login_at = session.get("login_at")
